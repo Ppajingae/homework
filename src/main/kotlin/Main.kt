@@ -10,42 +10,46 @@ fun main() {
 
     //BufferedReader 가 코테 할때 조금더 빠른 걸 보여 줘서 쓰긴 썻는데 왜 빠른지 잘 모르 겠습니다
     val br = BufferedReader(InputStreamReader(System.`in`))
-    val tempBr = br.readLine().split(" ")
-    val num1 = tempBr[0].toInt()
-    val num2 = tempBr[2].toInt()
-    var operator = tempBr[1]
-    var i: Int = 0
-    var tempNum:Int = 0
+    try {
+        var tempBr = br.readLine().split(" ")
+        var num1 = tempBr[0].toInt()
+        var num2 = tempBr[2].toInt()
 
-    while(operator != "="){
-        var newNum: Int
+        var operator = tempBr[1]
+        var i: Int = 0
+        var tempNum:Int = 0
 
-        if(i == 0) {
-            tempNum += operatorFunction(true, num1, operator, num2, tempNum)
-        }else{
-            val temp = br.readLine().split(" ")
-            if(temp.size >= 3){
-                println("겂울 다시 입력해주세요 (2번째 입력 시에는 (기호 숫자) 방식으로 입력 부탁드립니다)")
-                continue
-            }
-            operator = temp[0]
-             if(operator.length > 1){
-                println("연산자를 다시 입력해주세요")
-                continue
-            }
-            if(operator == "="){
-                println("총 계산 값 $tempNum")
-                break
-            }
-            newNum = temp[1].toInt()
 
-            tempNum = operatorFunction(false, tempNum, operator, newNum, tempNum)
+        while(operator != "="){
+            var newNum: Int
+
+            if(i == 0) {
+                tempNum += operatorFunction(true, num1, operator, num2, tempNum)
+            }else{
+                val temp = br.readLine().split(" ")
+                if(temp.size >= 3){
+                    println("겂울 다시 입력해주세요 (2번째 입력 시에는 (기호 숫자) 방식으로 입력 부탁드립니다)")
+                    continue
+                }
+                operator = temp[0]
+                if(operator.length > 1){
+                    println("연산자를 다시 입력해주세요")
+                    continue
+                }
+                if(operator == "="){
+                    println("총 계산 값 $tempNum")
+                    break
+                }
+                newNum = temp[1].toInt()
+
+                tempNum = operatorFunction(false, tempNum, operator, newNum, tempNum)
+            }
+
+            i++
         }
-
-
-        i++
+    }catch (e: NumberFormatException){
+        println("숫자가 잘못 입력 되었습니다")
     }
-
 }
 
 fun operatorFunction(isFirst: Boolean, num1:Int, operator:String, num2:Int, tempNumMain:Int):Int {
