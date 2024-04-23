@@ -6,8 +6,9 @@ import java.io.InputStreamReader
 
 fun main() {
 
-    //readln
     println("입력하고 싶은 값과 연산자를 띄워쓰기 단위로 입력해주세요 ex > 10 + 5")
+
+    //BufferedReader 가 코테 할때 조금더 빠른 걸 보여 줘서 쓰긴 썻는데 왜 빠른지 잘 모르 겠습니다
     val br = BufferedReader(InputStreamReader(System.`in`))
     val tempBr = br.readLine().split(" ")
     val num1 = tempBr[0].toInt()
@@ -20,42 +21,7 @@ fun main() {
         var newNum: Int
 
         if(i == 0) {
-            when (operator) {
-                "+" -> {
-                    val res = AddOperation().result(num1, num2)
-                    tempNum += res
-                    println(res)
-                }
-
-                "-" -> {
-                    val res = SubstractOperation().result(num1, num2)
-                    tempNum += res
-                    println(res)
-                }
-
-                "*" -> {
-                    val res = MultiplyOperation().result(num1, num2)
-                    tempNum += res
-                    println(res)
-                }
-
-                "/" -> {
-                    val res = DivideOperation().result(num1, num2)
-                    tempNum += res
-                    println(res)
-                }
-
-                "%" -> {
-                    val res = RemainOperation().result(num1, num2)
-                    tempNum += res
-                    println(res)
-                }
-
-                else -> {
-                    println("해당 값은 연산자가 아닙니다")
-                    break
-                }
-            }
+            tempNum += operatorFunction(true, num1, operator, num2, tempNum)
         }else{
             val temp = br.readLine().split(" ")
             if(temp.size >= 3){
@@ -69,37 +35,7 @@ fun main() {
             }
             newNum = temp[1].toInt()
 
-            when (operator) {
-                "+" -> {
-                    tempNum = AddOperation().result(tempNum, newNum)
-                    println(tempNum)
-                }
-
-                "-" -> {
-                    tempNum = SubstractOperation().result(tempNum, newNum)
-                    println(tempNum)
-                }
-
-                "*" -> {
-                    tempNum = MultiplyOperation().result(tempNum, newNum)
-                    println(tempNum)
-                }
-
-                "/" -> {
-                    tempNum = DivideOperation().result(tempNum, newNum)
-                    println(tempNum)
-                }
-
-                "%" -> {
-                    tempNum = RemainOperation().result(tempNum, newNum)
-                    println(tempNum)
-                }
-
-                else -> {
-                    println("해당 값은 연산자가 아닙니다")
-                    break
-                }
-            }
+            tempNum = operatorFunction(false, tempNum, operator, newNum, tempNum)
         }
 
 
@@ -108,32 +44,32 @@ fun main() {
 
 }
 
-fun operatorFunction(isFirst: Boolean, num1:Int, operator:String, num2:Int, tempNumMain:Int){
+fun operatorFunction(isFirst: Boolean, num1:Int, operator:String, num2:Int, tempNumMain:Int):Int {
     var tempNum = tempNumMain
     if(isFirst){
         when (operator) {
             "+" -> {
-                tempNum += AddOperation().result(tempNum, num2)
+                tempNum += AddOperation().result(num1, num2)
                 println(tempNum)
             }
 
             "-" -> {
-                tempNum += SubstractOperation().result(tempNum, num2)
+                tempNum += SubstractOperation().result(num1, num2)
                 println(tempNum)
             }
 
             "*" -> {
-                tempNum += MultiplyOperation().result(tempNum, num2)
+                tempNum += MultiplyOperation().result(num1, num2)
                 println(tempNum)
             }
 
             "/" -> {
-                tempNum += DivideOperation().result(tempNum, num2)
+                tempNum += DivideOperation().result(num1, num2)
                 println(tempNum)
             }
 
             "%" -> {
-                tempNum += RemainOperation().result(tempNum, num2)
+                tempNum += RemainOperation().result(num1, num2)
                 println(tempNum)
             }
 
@@ -141,6 +77,40 @@ fun operatorFunction(isFirst: Boolean, num1:Int, operator:String, num2:Int, temp
                 println("해당 값은 연산자가 아닙니다")
             }
         }
+
+        return tempNum
+    }else {
+        when (operator) {
+            "+" -> {
+                tempNum = AddOperation().result(num1, num2)
+                println(tempNum)
+            }
+
+            "-" -> {
+                tempNum = SubstractOperation().result(num1, num2)
+                println(tempNum)
+            }
+
+            "*" -> {
+                tempNum = MultiplyOperation().result(num1, num2)
+                println(tempNum)
+            }
+
+            "/" -> {
+                tempNum = DivideOperation().result(num1, num2)
+                println(tempNum)
+            }
+
+            "%" -> {
+                tempNum = RemainOperation().result(num1, num2)
+                println(tempNum)
+            }
+
+            else -> {
+                println("해당 값은 연산자가 아닙니다")
+            }
+        }
+        return tempNum
     }
 
 }
