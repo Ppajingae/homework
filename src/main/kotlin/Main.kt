@@ -29,6 +29,10 @@ fun main() {
                 continue
             }
             operator = temp[0]
+             if(operator.length > 1){
+                println("연산자를 다시 입력해주세요")
+                continue
+            }
             if(operator == "="){
                 println("총 계산 값 $tempNum")
                 break
