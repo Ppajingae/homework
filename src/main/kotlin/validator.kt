@@ -7,113 +7,125 @@ import java.io.InputStreamReader
 fun main() {
 
     println("입력하고 싶은 값과 연산자를 띄워쓰기 단위로 입력해주세요 ex > 10 + 5")
-
-    //BufferedReader 가 코테 할때 조금더 빠른 걸 보여 줘서 쓰긴 썻는데 왜 빠른지 잘 모르 겠습니다
-    //Validation 함수를 만들어서 검사하는 옵션으로 처리
-    //계산을 처리하는 함수는 Main.kt에 정의
-    val br = BufferedReader(InputStreamReader(System.`in`))
+    val bufferedReader = BufferedReader(InputStreamReader(System.`in`))
 
     //몇 번 연산 했는지 체크
-    var i: Int = 0
+    var isFirstCalculationCheck = false
+    var tempNumber: Int = 0
 
-    //연산을 여러번 했을 경우 저장할 변수
-    var tempNum: Int = 0
-    val tempBr = br.readLine().split(" ")
-    var num1 = tempBr[0]
-    var operatorString: String = tempBr[1]
-    var num2 = tempBr[2]
-
-    //숫자 검사 함수
-    if(!numberValidator(num1,num2)){
-        while(!numberValidator(num1,num2)){
-            println("숫자만 다시 입력해주세요")
-            val reBr = br.readLine().split(" ")
-            num1 = reBr[0]
-            num2 = reBr[1]
-            numberValidator(num1,num2)
-        }
-    }
-
-    //연산자 검사 함수
-    var operator: Char = operatorValidator(operatorString, br, i)
-
+    val startCalculator = inputNumberOperatorValidator(bufferedReader, isFirstCalculationCheck)
 
     while (true){
-        if(i == 0){
-            tempNum += operatorFunction(true, num1.toInt(), operator, num2.toInt(), tempNum)
+        if(!isFirstCalculationCheck){
+            tempNumber += operatorFunction(
+                isFirst = isFirstCalculationCheck,
+                num1= startCalculator[0].toInt(),
+                num2= startCalculator[2].toInt(),
+                operator = startCalculator[1],
+                tempNumber = tempNumber
+            )
+
+            isFirstCalculationCheck = true
         }else{
-            println("추가적으로 연산할 값을 연산자 숫자 순으로 입력해 주세요")
-            println("ex >> + 5")
-            val nextBr = br.readLine().split(" ")
-            val newOperator = nextBr[0]
-            operator = operatorValidator(newOperator, br, i)
-            if(operator == '='){
-                println("총 계산 값 $tempNum")
+            val nextCalculation = inputNumberOperatorValidator(bufferedReader,isFirstCalculationCheck)
+
+            if (nextCalculation[1] == "="){
+                println("총 계산 값 $tempNumber")
                 break
             }
-            val newNum = nextBr[1]
-            numberValidator(newNum, "1")
 
-            tempNum = operatorFunction(num1=tempNum, num2=newNum.toInt(), isFirst = false, operator = operator, tempNumMain = tempNum)
+            tempNumber = operatorFunction(
+                isFirst = isFirstCalculationCheck,
+                num1= tempNumber,
+                num2= nextCalculation[0].toInt(),
+                operator = nextCalculation[1],
+                tempNumber = tempNumber
+            )
+
+
         }
-
-        i++
     }
-
-
-
 
 }
 
-fun operatorValidator(operator: String, br: BufferedReader, count: Int): Char {
-    if (count == 0) {
+fun operatorValidator(operator: String, count: Boolean):Boolean {
+    if (!count) {
         for (i in operator) {
-            if (i == '+' || i == '-' || i == '*' || i == '/' || i == '%') {
-                return i
-            } else {
-                while (true) {
-                    println("연산자를 다시 입력해주세요")
-                    println("연산자는 최초 입력된 연산자로 계산이 됩니다")
-                    println("최초 계산 시에는 = 을 사용할 수 없습니다")
-                    var operatorResult = br.readLine().toString()
-                    for (k in operatorResult) {
-                        if (k == '+' || k == '-' || k == '*' || k == '/' || k == '%') {
-                            return k
-                        }
-                    }
-                }
-            }
+            return i in arrayOf('+', '-', '*', '/' ,'%')
         }
     }else{
-        for (i in operator) {
-            if (i == '+' || i == '-' || i == '*' || i == '/' || i == '%' || i == '=') {
-                return i
-            } else {
-                while (true) {
-                    println("연산자를 다시 입력해주세요")
-                    println("연산자는 최초 입력된 연산자로 계산이 됩니다")
-                    var operatorResult = br.readLine().toString()
-                    for (k in operatorResult) {
-                        if (k == '+' || k == '-' || k == '*' || k == '/' || k == '%' || k == '=') {
-                            return k
-                        }
-                    }
-                }
-            }
+        for(i in operator) {
+            return i in arrayOf('+', '-', '*', '/', '%', '=')
         }
     }
 
-
-
-    return ' '
+    return false
 }
 
-fun numberValidator(num1: String, num2:String):Boolean{
+fun numberValidator(num1: String, num2:String, isFirstCalculationCheck: Boolean):Boolean{
     try{
+        if(isFirstCalculationCheck){
+            num1.toInt()
+            return true
+        }
         num1.toInt()
         num2.toInt()
         return true
     }catch (e:NumberFormatException){
         return false
     }
+}
+
+fun inputNumberOperatorValidator(bufferedReader: BufferedReader, isFirstCalculationCheck: Boolean):List<String> {
+    val calculationNumberOperationList = ArrayList<String>()
+    var isNumberAndOperator = false
+    var firstNumber:String
+    var operatorString: String
+    var secondNumber:String
+
+    while (!isNumberAndOperator) {
+     try {
+         if(!isFirstCalculationCheck){
+             val tempArray = bufferedReader.readLine().split(" ")
+             firstNumber = tempArray[0]
+             operatorString = tempArray[1]
+             secondNumber = tempArray[2]
+         }else{
+             val tempArray = bufferedReader.readLine().split(" ")
+             operatorString  = tempArray[0]
+             if (operatorString == "="){
+                 firstNumber = "0"
+             }else{
+                 firstNumber = tempArray[1]
+             }
+             secondNumber = "0"
+         }
+
+         if (!numberValidator(firstNumber, secondNumber, isFirstCalculationCheck)) {
+             println("숫자가 잘못 되었습니다")
+             println("입력하고 싶은 값과 연산자를 띄워쓰기 단위로 입력해주세요 ex > 10 + 5")
+             continue
+         }
+
+         if (!operatorValidator(operatorString, isFirstCalculationCheck)) {
+             println("연산자가 잘못 되었습니다")
+             println("연산자는 +, - , *, /, %, = 입력 가능힙니다")
+             println("입력하고 싶은 값과 연산자를 띄워쓰기 단위로 입력해주세요 ex > 10 + 5")
+             continue
+         }
+         calculationNumberOperationList.addAll(arrayListOf(firstNumber, operatorString, secondNumber))
+         isNumberAndOperator = true
+     }catch (e:IndexOutOfBoundsException){
+         println(e)
+         println("입력하고 싶은 값과 연산자를 띄워쓰기 단위로 입력해주세요 ex > 10 + 5")
+     }
+
+
+    }
+
+    return calculationNumberOperationList
+}
+
+fun calculatorProcedure(){
+
 }
